@@ -20,4 +20,7 @@ FILL_COLOR = '#00bfff'
 def num_ticks():
 	return len(TICKS) - 1
 
+def line_width(zoom_length):
+	return (WIDTH - 2*BUFFER)  / zoom_length
+
 TICK_WIDTH = LENGTH / num_ticks()
