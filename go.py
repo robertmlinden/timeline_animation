@@ -6,14 +6,15 @@ class Timeline():
 	def __init__(self):
 		self.app = tk.Tk()
 		self.canvas = tk.Canvas(self.app, bg="black", height=c.HEIGHT, width=c.WIDTH)
+		self.canvas.pack()
 		self.start_x, self.end_x = c.START_X, c.END_X
 
 	def go(self):
-		self.canvas.pack()
 		self.app.mainloop()
 
 	def clear(self):
 		self.canvas.delete('all')
+		self.app.update()
 
 	def __tick_x(self, tick_num):
 		return c.BUFFER + int((tick_num - c.START_TICK) * c.TICK_WIDTH)
@@ -34,9 +35,20 @@ class Timeline():
 
 			self.canvas.create_line(x, y_start, x, y_end, fill=c.FILL_COLOR)
 
+		self.app.update()
+
 	def zoom(self, start_tick, end_tick):
-		pass
+		goal_x_start = self.__tick_x(start_tick)
+		goal_x_end   = self.__tick_x(end_tick)
+
+		for idx in range(c.ZOOM_SMOOTHNESS):
+			pass
 
 timeline = Timeline()
+timeline.display_line()
+time.sleep(2)
+timeline.clear()
+timeline.start_x = 100
+timeline.end_x = 1000
 timeline.display_line()
 timeline.go()
