@@ -57,7 +57,7 @@ class Timeline():
 			y_end = y_start - (c.TICK_HEIGHT * self.__zoom_factor)
 
 			self.canvas.create_line(x, y_start, x, y_end, fill=c.FILL_COLOR, width = self.__zoom_factor)
-			self.canvas.create_text(x, y_end - 10, text=str(tick_num), font=("Times", 10, "bold"), fill='white')
+			self.canvas.create_text(x, y_end - 5*self.__zoom_factor, text=str(tick_num), font=("Times", int(5*self.__zoom_factor), "bold"), fill='white')
 
 		self.app.update()
 
@@ -93,6 +93,7 @@ class Timeline():
 timeline = Timeline()
 timeline.display_line()
 time.sleep(c.ZOOM_TIME_LENGTH / (c.ZOOM_SMOOTHNESS - 1))
-timeline.zoom(6, 16)
+# timeline.zoom(6, 16)
+timeline.zoom(16, 26)
 #timeline.zoom(30, 40)
 timeline.go()
