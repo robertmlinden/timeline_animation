@@ -19,6 +19,7 @@ TICK_HEIGHT = 10
 FILL_COLOR = '#00bfff'
 
 ZOOM_SMOOTHNESS = 30
+ZOOM_TIME_LENGTH = 5
 
 def num_ticks():
 	return len(TICKS) - 1
