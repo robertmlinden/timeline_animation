@@ -7,9 +7,9 @@ class Timeline():
 		self.app = tk.Tk()
 		self.canvas = tk.Canvas(self.app, bg="black", height=c.HEIGHT, width=c.WIDTH)
 		self.canvas.pack()
-		self.__start_x, self.__end_x = c.START_X, c.END_X
 		self.__zoom_factor = 1
 		self.__start_tick = c.START_TICK
+		self.__eq_x = 0
 
 	def go(self):
 		self.app.mainloop()
@@ -19,32 +19,18 @@ class Timeline():
 		self.app.update()
 
 	def __length(self):
-		return self.__end_x - self.__start_x
+		pass
+		#return self.__end_x - self.__start_x
+
+	def __tick_x(self, tick_num, zoom_factor):
+		tick_distance = LENGTH / c.num_ticks()
+		return c.START_X + (tick_num)
 
 	def __tick_x(self, tick_num):
 		tick_distance = self.__length() / c.num_ticks()
 		return c.START_X + (tick_num - self.__start_tick) * tick_distance
-		# return self.__start_x + int((tick_num - c.START_TICK) * tick_distance)
 
-	def __set_zoom_factor(self):
-		self.__zoom_factor = self.__length() / c.LENGTH
-
-	def display_line(self):
-		self.__set_zoom_factor()
-
-		self.canvas.create_line(self.__start_x, c.Y, self.__end_x, c.Y,  fill=c.FILL_COLOR, width=self.__zoom_factor)
-
-		for tick_num in c.TICKS:
-			x = self.__tick_x(tick_num)
-			y_start = c.Y
-			y_end = y_start - (c.TICK_HEIGHT * self.__zoom_factor)
-
-			self.canvas.create_line(x, y_start, x, y_end, fill=c.FILL_COLOR, width = self.__zoom_factor)
-			self.canvas.create_text(x, y_end - 10, text=str(tick_num), font=("Times", 10, "bold"), fill='white')
-
-		self.app.update()
-
-	def __eq_x(self, current_start_x, current_end_x):
+	def __set_eq_x(current_start_x, current_end_x):
 		#eq point
 		goal_start_x = c.START_X
 		goal_end_x = c.END_X
@@ -57,26 +43,41 @@ class Timeline():
 
 		x = a / (w - d)
 
-		eq_x = a + x*d
+		self.__eq_x = a + x*d
 
-		return eq_x
+
+	def display_line(self, zoom_factor=1):
+		start_x = self.__eq_x - (self.__eq_x - c.START_X) * zoom_factor
+		end_x = self.__eq_x + (c.END_X - self.__eq_x) * zoom_factor
+
+		length = end_x - start_x
+
+		self.canvas.create_line(start_x, c.Y, end_x, c.Y,  fill=c.FILL_COLOR, width=zoom_factor)
+
+		# for tick_num in c.TICKS:
+		# 	x = self.__tick_x(tick_num)
+		# 	y_start = c.Y
+		# 	y_end = y_start - (c.TICK_HEIGHT * zoom_factor)
+
+		# 	self.canvas.create_line(x, y_start, x, y_end, fill=c.FILL_COLOR, width = zoom_factor)
+		# 	self.canvas.create_text(x, y_end - 10, text=str(tick_num), font=("Times", 10, "bold"), fill='white')
+
+		self.app.update()
 
 	def zoom(self, start_tick, end_tick):
 		self.__start_tick = start_tick
 		current_start_x = self.__tick_x(start_tick)
 		current_end_x   = self.__tick_x(end_tick)
 
-		incr_start_x = (current_start_x - self.__start_x) / c.ZOOM_SMOOTHNESS
-		incr_end_x = (current_end_x - self.__end_x) / c.ZOOM_SMOOTHNESS
+		self.__set_eq_x(current_start_x, current_end_x)
 
-		print(incr_start_x, incr_end_x)
+		final_zoom_factor = (current_end_x - current_start_x) / (c.END_X - c.START_X)
 
-		for idx in range(c.ZOOM_SMOOTHNESS):
-			self.__start_x = self.__start_x - incr_start_x
-			self.__end_x = self.__end_x - incr_end_x
-			print(self.__length())
+		for zoom_idx in range(c.ZOOM_SMOOTHNESS):
 			self.clear()
-			self.display_line()
+
+			zoom_factor = zoom_idx / c.ZOOM_SMOOTHNESS * final_zoom_factor
+			self.display_line(zoom_factor)
 			time.sleep(0.1)
 
 timeline = Timeline()
